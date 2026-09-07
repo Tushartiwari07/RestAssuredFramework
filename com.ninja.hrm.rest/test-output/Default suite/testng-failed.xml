@@ -3,13 +3,13 @@
 <suite name="Failed suite [Default suite]" guice-stage="DEVELOPMENT">
   <test thread-count="5" name="Default test(failed)">
     <classes>
-      <class name="employee.reset">
+      <class name="employee.CreateEmployee">
         <methods>
           <include name="configAS"/>
-          <include name="reset"/>
           <include name="configBS"/>
+          <include name="verifyEmployeeIsCreatedViaUi"/>
         </methods>
-      </class> <!-- employee.reset -->
+      </class> <!-- employee.CreateEmployee -->
     </classes>
   </test> <!-- Default test(failed) -->
 </suite> <!-- Failed suite [Default suite] -->

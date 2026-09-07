@@ -1,6 +1,10 @@
 package employee;
 
 import org.json.simple.parser.ParseException;
+import org.junit.Assert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.annotations.Test;
 
 import com.jayway.jsonpath.JsonPath;
@@ -13,14 +17,26 @@ import restUtility.DeleteEmployeetUtil;
 import restUtility.DeleteProjectUtil;
 
 import static io.restassured.RestAssured.*;
+import static org.testng.Assert.assertEquals;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.http.WebSocket;
+import java.time.Duration;
 import java.util.HashMap;
 
 public class CreateEmployee extends BaseAPI {
 	public String empID;
 	public String projID;
+	public	String designation;
+	public String dob;
+	public String email;
+	public String empName;
+	public double experience;
+	public String mobileNo;
+	public String role;
+	public String username;
+	public String projName;
 	@Test(priority = 1)
 	public void createEmployee() throws FileNotFoundException, ParseException, IOException, InterruptedException
 	{
@@ -31,19 +47,19 @@ public class CreateEmployee extends BaseAPI {
 		//Project Creation
 //		String projName = createProj.createProject(projectName, createdBy, teamSize, status);
 		  Response projResponse = createProj.createProject(projectName, createdBy, teamSize, status);
-		 String projName =   JsonPath.read(projResponse.asString(), "projectName");
+		  projName =   JsonPath.read(projResponse.asString(), "projectName");
 		  projID=JsonPath.read(projResponse.asString(),"projectId");
 		 
 		
 		
-		String designation=flib.getDataFromPropertiesFile("designation");
-		String dob=flib.getDataFromPropertiesFile("dob");
-		String email=flib.getDataFromPropertiesFile("email");
-		String empName=flib.getDataFromPropertiesFile("empName");
-		double experience= Double.parseDouble(flib.getDataFromPropertiesFile("experience"));
-		String mobileNo=flib.getDataFromPropertiesFile("mobileNo");
-		String role=flib.getDataFromPropertiesFile("role");
-		String username=flib.getDataFromPropertiesFile("username");
+		designation=flib.getDataFromPropertiesFile("designation");
+		dob=flib.getDataFromPropertiesFile("dob");
+		email=flib.getDataFromPropertiesFile("email");
+		empName=flib.getDataFromPropertiesFile("empName");
+		experience= Double.parseDouble(flib.getDataFromPropertiesFile("experience"));
+		mobileNo=flib.getDataFromPropertiesFile("mobileNo");
+		role=flib.getDataFromPropertiesFile("role");
+	    username=flib.getDataFromPropertiesFile("username");
 		
 		EmployeePOJO emp = new EmployeePOJO(designation, dob, email, empName+"_"+javalib.generaterandromNumber(99), experience, mobileNo, projName, role, username+"_"+javalib.generaterandromNumber(99));
 		Response respo = given()
@@ -60,6 +76,36 @@ public class CreateEmployee extends BaseAPI {
 		Thread.sleep(10000);
 	}
 	
+	@Test
+	public void verifyEmployeeIsCreatedViaUi()
+	{
+		WebDriver driver = new ChromeDriver();
+		driver.get("http://49.249.29.4:8091/welcome");
+		driver.manage().window().maximize();
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(20));
+		//Login to application
+		driver.findElement(By.id("username")).sendKeys("");
+		driver.findElement(By.id("inputPassword")).sendKeys("");
+		driver.findElement(By.xpath("//button[text()='Sign in']")).click();
+		
+		
+		driver.findElement(By.linkText("Employees")).click();
+		
+		Assert.assertEquals("http://49.249.29.4:8091/dashboard/users", driver.getCurrentUrl());
+		
+		assertEquals(empName, driver.findElement(By.xpath("(//table[@class='table table-striped table-hover']/tbody/tr/td[3])[1]")).getText());
+		assertEquals(username, driver.findElement(By.xpath("(//table[@class='table table-striped table-hover']/tbody/tr/td[4])[1]")).getText());
+		assertEquals(email, driver.findElement(By.xpath("(//table[@class='table table-striped table-hover']/tbody/tr/td[5])[1]")).getText());
+		assertEquals(mobileNo, driver.findElement(By.xpath("(//table[@class='table table-striped table-hover']/tbody/tr/td[6])[1]")).getText());
+		assertEquals(designation, driver.findElement(By.xpath("(//table[@class='table table-striped table-hover']/tbody/tr/td[7])[1]")).getText());
+		assertEquals(experience, driver.findElement(By.xpath("(//table[@class='table table-striped table-hover']/tbody/tr/td[8])[1]")).getText());
+		assertEquals(projName, driver.findElement(By.xpath("(//table[@class='table table-striped table-hover']/tbody/tr/td[9])[1]")).getText());
+		
+		for(int i=2;i<=9;i++)
+		{
+			System.out.println(driver.findElement(By.xpath("(//table[@class='table table-striped table-hover']/tbody/tr/td["+i+"])[1]")).getText());
+		}		 
+}
 //	@Test(priority = 2)
 //	public void deleteEmployee() throws InterruptedException
 //	{

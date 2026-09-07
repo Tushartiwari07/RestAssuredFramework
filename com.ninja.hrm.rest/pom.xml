@@ -10,6 +10,11 @@
     <artifactId>rest-assured</artifactId>
     <version>6.0.0</version>
 </dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>4.27.0</version>
+		</dependency>
 <!-- Source: https://mvnrepository.com/artifact/org.testng/testng -->
 <dependency>
     <groupId>org.testng</groupId>
